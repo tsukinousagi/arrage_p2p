@@ -65,7 +65,7 @@ class arrange_p2p {
     }
 
     public function split_string($string) {
-        $delimiter = ' []()＆（）「！」／【】-『』+._&!∕';
+        $delimiter = ' []()＆（）「」／【】-『』+._&∕';
         $tmp = '';
         $result = array();
         for ($i = 0; $i <= mb_strlen($string, 'UTF-8'); $i++) {
