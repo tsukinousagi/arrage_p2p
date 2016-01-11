@@ -13,7 +13,9 @@ class arrange_p2p {
 
         $this->config = array(
             'db' => 'p2p.sqlite',
-            'source_dir' => '/media/usb0/p2p/bt/downloads/',
+//            'source_dir' => '/media/usb0/p2p/bt/downloads/',
+//            'source_dir' => '/media/sf_maria/p2p/bt/downloads/',
+            'source_dir' => '/media/sf_maria/p2p/ed2k/incoming/',
             'target' => array(
                 '1' => '/home/usagi/mnt/卡通/',
                 '2' => '/home/usagi/mnt/音樂/',
@@ -53,11 +55,23 @@ class arrange_p2p {
         echo($msg . PHP_EOL);
     }
 
-    public function ask_a_string($prompt) {
-        echo($prompt);
-        $stdin = fopen('php://stdin', 'r');
-        $response = fgets($stdin);
-        return trim($response);
+    public function ask_a_string($prompt, $verify = FALSE) {
+        if ($verify) {
+            $correct = '';
+            while ($correct <> 'Y') {
+                echo($prompt);
+                $stdin = fopen('php://stdin', 'r');
+                $response = fgets($stdin);
+                $correct = strtoupper($this->ask_a_string(sprintf('--> %s <-- 是否輸入正確? [Y/N]', trim($response))));
+            }
+            return trim($response);
+
+        } else {
+            echo($prompt);
+            $stdin = fopen('php://stdin', 'r');
+            $response = fgets($stdin);
+            return trim($response);
+        }
     }
 
     public function run_external_cmd($cmd) {
@@ -175,7 +189,7 @@ class arrange_p2p {
             while ($ret <> '0') {
                 $this->out(sprintf('目前已選的關鍵字: ' . $this->compact_array($keyword)));
                 $ret = $this->ask_a_string('請選擇要加入或移除的關鍵字: ' . $this->choice_string($choices));
-                if ($ret <> '0') {
+                if (($ret <> '0') && ($ret <> '')) {
                     $key = array_search($choices[intval($ret)], $keyword);
                     if ($key !== FALSE) {
                         unset($keyword[$key]);
@@ -262,7 +276,7 @@ class arrange_p2p {
         } else if ($table == 'filter') {
             $title = '';
             while ($title == '') {
-                $title = $this->ask_a_string('請問此作品的中文標題? ');
+                $title = $this->ask_a_string('請問此作品的中文標題? ', TRUE);
             }
         } else {
             return FALSE;
@@ -361,11 +375,11 @@ class arrange_p2p {
 
         if ($operation['file_type'] == '1') {
             if ($operation['operation'] == '1') {
-                //$cmd[] = sprintf('cp -rvu "%s" "%s" || read -p "請按Enter繼續...."', $src_fullpath, $dst_fullpath);
-                $cmd[] = sprintf('rsync --size-only -v --progress "%s" "%s" || read -p "請按Enter繼續...."', $src_fullpath, $dst_fullpath);
+                //$cmd[] = sprintf('cp -rvu "%s" "%s" || read -e -p "請按Enter繼續...."', $src_fullpath, $dst_fullpath);
+                $cmd[] = sprintf('rsync --size-only -v --progress "%s" "%s" || read -e -p "請按Enter繼續...."', $src_fullpath, $dst_fullpath);
             } else if ($operation['operation'] == '2') {
-                //$cmd[] = sprintf('cp -rvu "%s"/* "%s" || read -p "請按Enter繼續...."', $src_fullpath, $dst_fullpath);
-                $cmd[] = sprintf('rsync --size-only -v --progress "%s"/* "%s" || read -p "請按Enter繼續...."', $src_fullpath, $dst_fullpath);
+                //$cmd[] = sprintf('cp -rvu "%s"/* "%s" || read -e -p "請按Enter繼續...."', $src_fullpath, $dst_fullpath);
+                $cmd[] = sprintf('rsync --size-only -v --progress "%s"/* "%s" || read -e -p "請按Enter繼續...."', $src_fullpath, $dst_fullpath);
             } else if ($operation['operation'] == '3') {
                 //取得檔案清單
                 $files = $this->get_all_files($src_fullpath);
@@ -376,12 +390,12 @@ class arrange_p2p {
             }
         } else if ($operation['file_type'] == '2') {
             if ($operation['operation'] == '1') {
-                //$cmd[] = sprintf('cp -vu "%s" "%s" || read -p "請按Enter繼續...."', $src_fullpath, $dst_fullpath);
-                $cmd[] = sprintf('rsync --size-only -v --progress "%s" "%s" || read -p "請按Enter繼續...."', $src_fullpath, $dst_fullpath);
+                //$cmd[] = sprintf('cp -vu "%s" "%s" || read -e -p "請按Enter繼續...."', $src_fullpath, $dst_fullpath);
+                $cmd[] = sprintf('rsync --size-only -v --progress "%s" "%s" || read -e -p "請按Enter繼續...."', $src_fullpath, $dst_fullpath);
             } else if ($operation['operation'] == '2') {
-                $cmd[] = 'read -p "不可能這樣處理, 請按Enter繼續...."';
+                $cmd[] = 'read -e -p "不可能這樣處理, 請按Enter繼續...."';
             } else if ($operation['operation'] == '3') {
-                $cmd[] = 'read -p "不可能這樣處理, 請按Enter繼續...."';
+                $cmd[] = 'read -e -p "不可能這樣處理, 請按Enter繼續...."';
             }
         }
 
@@ -486,6 +500,9 @@ class arrange_p2p {
     }
 
     public function main() {
+//        var_dump($this->ask_a_string('test'));
+//        var_dump($this->ask_a_string('test2', TRUE));
+//        die();
 //        var_dump($this->is_dir_imcomplete('/media/usb0/p2p/bt/downloads/Kurosaki Maon - Toaru Majutsu no Index ED Single - Magic∞world/'));
         $this->ask_for_dry_run();
         $this->process_p2p_files();
