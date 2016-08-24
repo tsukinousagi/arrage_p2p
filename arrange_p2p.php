@@ -376,10 +376,10 @@ class arrange_p2p {
         if ($operation['file_type'] == '1') {
             if ($operation['operation'] == '1') {
                 //$cmd[] = sprintf('cp -rvu "%s" "%s" || read -e -p "請按Enter繼續...."', $src_fullpath, $dst_fullpath);
-                $cmd[] = sprintf('rsync --size-only -v --progress "%s" "%s" || read -e -p "請按Enter繼續...."', $src_fullpath, $dst_fullpath);
+                $cmd[] = sprintf('rsync --size-only -r -v --progress "%s" "%s" || read -e -p "請按Enter繼續...."', $src_fullpath, $dst_fullpath);
             } else if ($operation['operation'] == '2') {
                 //$cmd[] = sprintf('cp -rvu "%s"/* "%s" || read -e -p "請按Enter繼續...."', $src_fullpath, $dst_fullpath);
-                $cmd[] = sprintf('rsync --size-only -v --progress "%s"/* "%s" || read -e -p "請按Enter繼續...."', $src_fullpath, $dst_fullpath);
+                $cmd[] = sprintf('rsync --size-only -r -v --progress "%s"/* "%s" || read -e -p "請按Enter繼續...."', $src_fullpath, $dst_fullpath);
             } else if ($operation['operation'] == '3') {
                 //取得檔案清單
                 $files = $this->get_all_files($src_fullpath);
@@ -391,7 +391,7 @@ class arrange_p2p {
         } else if ($operation['file_type'] == '2') {
             if ($operation['operation'] == '1') {
                 //$cmd[] = sprintf('cp -vu "%s" "%s" || read -e -p "請按Enter繼續...."', $src_fullpath, $dst_fullpath);
-                $cmd[] = sprintf('rsync --size-only -v --progress "%s" "%s" || read -e -p "請按Enter繼續...."', $src_fullpath, $dst_fullpath);
+                $cmd[] = sprintf('rsync --size-only -r -v --progress "%s" "%s" || read -e -p "請按Enter繼續...."', $src_fullpath, $dst_fullpath);
             } else if ($operation['operation'] == '2') {
                 $cmd[] = 'read -e -p "不可能這樣處理, 請按Enter繼續...."';
             } else if ($operation['operation'] == '3') {
